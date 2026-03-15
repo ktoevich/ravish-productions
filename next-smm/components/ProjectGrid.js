@@ -27,20 +27,41 @@ export default function ProjectGrid({ initialImages = [], initialVideos = [] }) 
         <div style={{ paddingBottom: '100px' }}>
             {/* ФОТО СЕКЦИЯ */}
             {imagesToShow.length > 0 && (
-                <div className="photo-grid" id="photoGrid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', marginBottom: '40px' }}>
+                <div className="reels-container" id="photoGrid" style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
+                    gap: '30px',
+                    maxWidth: '1200px',
+                    margin: '0 auto',
+                    padding: '0 20px',
+                    marginBottom: '40px'
+                }}>
                     {imagesToShow.map((file, i) => (
                         <div
-                            className={`photo-item reveal reveal-delay-${(i % 4)}`}
+                            className={`reveal reveal-delay-${(i % 3)}`}
                             key={file}
                             style={{
-                                background: 'rgba(255, 255, 255, 0.95)',
-                                borderColor: 'rgba(255, 255, 255, 0.4)',
                                 position: 'relative',
-                                overflow: 'hidden',
-                                aspectRatio: '1/1'
+                                padding: '12px',
+                                background: 'rgba(255, 255, 255, 0.1)',
+                                borderRadius: '35px',
+                                border: '2px solid rgba(255, 255, 255, 0.2)',
+                                boxShadow: '0 20px 40px rgba(0,0,0,0.3)',
+                                backdropFilter: 'blur(10px)',
+                                transition: 'transform 0.3s ease',
+                                cursor: 'pointer'
                             }}
+                            onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-10px)'}
+                            onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
                         >
-                            <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+                            <div style={{
+                                position: 'relative',
+                                width: '100%',
+                                aspectRatio: '9/16',
+                                borderRadius: '25px',
+                                overflow: 'hidden',
+                                background: '#000'
+                            }}>
                                 <Image
                                     src={`/mat/${file}`}
                                     alt=""
