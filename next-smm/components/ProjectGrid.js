@@ -6,13 +6,30 @@ import Image from 'next/image';
 export default function ProjectGrid({ initialImages = [], initialVideos = [] }) {
     const [visibleImageCount, setVisibleImageCount] = useState(12);
     const [visibleVideoCount, setVisibleVideoCount] = useState(6);
+    const [loadingPriority, setLoadingPriority] = useState('sequential');
+
+    useEffect(() => {
+        // "а если ничего не сделали, сначала фото потом видео"
+        const idleTimer = setTimeout(() => {
+            if (loadingPriority === 'sequential') {
+                setLoadingPriority('photos');
+            }
+        }, 2000);
+
+        return () => clearTimeout(idleTimer);
+    }, [loadingPriority]);
+
+    const handlePhotoClick = () => setLoadingPriority('photos');
+    const handleVideoClick = () => setLoadingPriority('videos');
 
     const loadMoreImages = () => {
+        setLoadingPriority('photos');
         setVisibleImageCount(prev => prev + 12);
         setTimeout(() => window.dispatchEvent(new Event('scroll')), 100);
     };
 
     const loadMoreVideos = () => {
+        setLoadingPriority('videos');
         setVisibleVideoCount(prev => prev + 6);
         setTimeout(() => window.dispatchEvent(new Event('scroll')), 100);
     };
@@ -27,15 +44,20 @@ export default function ProjectGrid({ initialImages = [], initialVideos = [] }) 
         <div style={{ paddingBottom: '100px' }}>
             {/* ФОТО СЕКЦИЯ */}
             {imagesToShow.length > 0 && (
-                <div className="reels-container" id="photoGrid" style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
-                    gap: '30px',
-                    maxWidth: '1200px',
-                    margin: '0 auto',
-                    padding: '0 20px',
-                    marginBottom: '40px'
-                }}>
+                <div
+                    className="reels-container"
+                    id="photoGrid"
+                    onClick={handlePhotoClick}
+                    style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
+                        gap: '30px',
+                        maxWidth: '1200px',
+                        margin: '0 auto',
+                        padding: '0 20px',
+                        marginBottom: '40px'
+                    }}
+                >
                     {imagesToShow.map((file, i) => (
                         <div
                             className={`reveal reveal-delay-${(i % 3)}`}
@@ -68,8 +90,8 @@ export default function ProjectGrid({ initialImages = [], initialVideos = [] }) 
                                     fill
                                     sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
                                     style={{ objectFit: 'cover' }}
-                                    priority={i < 4}
-                                    loading={i < 4 ? "eager" : "lazy"}
+                                    priority={loadingPriority === 'photos' || (loadingPriority === 'sequential' && i < 4)}
+                                    loading={(loadingPriority === 'photos' || (loadingPriority === 'sequential' && i < 4)) ? "eager" : "lazy"}
                                 />
                             </div>
                         </div>
@@ -87,7 +109,7 @@ export default function ProjectGrid({ initialImages = [], initialVideos = [] }) 
 
             {/* ВИДЕО СЕКЦИЯ (REELS / SHORTS) */}
             {initialVideos.length > 0 && (
-                <>
+                <div onClick={handleVideoClick}>
                     <div className="section-header reveal" style={{ marginTop: '120px', marginBottom: '60px' }}>
                         <span className="section-label" style={{ color: '#ffffff' }}>03.5 — Видеопортфолио</span>
                         <h2 style={{ color: '#ffffff', fontSize: '32px' }}>Наши Reels & Shorts</h2>
@@ -111,7 +133,7 @@ export default function ProjectGrid({ initialImages = [], initialVideos = [] }) 
                                     position: 'relative',
                                     padding: '12px',
                                     background: 'rgba(255, 255, 255, 0.1)',
-                                    borderRadius: '35px', // More rounded like a phone
+                                    borderRadius: '35px',
                                     border: '2px solid rgba(255, 255, 255, 0.2)',
                                     boxShadow: '0 20px 40px rgba(0,0,0,0.3)',
                                     backdropFilter: 'blur(10px)',
@@ -121,7 +143,6 @@ export default function ProjectGrid({ initialImages = [], initialVideos = [] }) 
                                 onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-10px)'}
                                 onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
                             >
-                                {/* The "Phone Screen" Container */}
                                 <div style={{
                                     position: 'relative',
                                     width: '100%',
@@ -136,7 +157,7 @@ export default function ProjectGrid({ initialImages = [], initialVideos = [] }) 
                                         loop
                                         muted
                                         playsInline
-                                        preload="metadata"
+                                        preload={loadingPriority === 'videos' ? "auto" : (loadingPriority === 'sequential' ? "metadata" : "none")}
                                         onClick={(e) => {
                                             if (e.target.paused) {
                                                 e.target.play();
@@ -145,21 +166,19 @@ export default function ProjectGrid({ initialImages = [], initialVideos = [] }) 
                                             }
                                         }}
                                     />
-
-
                                 </div>
                             </div>
                         ))}
                     </div>
+                </div>
+            )}
 
-                    {hasMoreVideos && (
-                        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '60px' }}>
-                            <button onClick={loadMoreVideos} className="btn-primary" style={{ padding: '15px 40px', borderRadius: '30px' }}>
-                                Больше видео
-                            </button>
-                        </div>
-                    )}
-                </>
+            {hasMoreVideos && (
+                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '60px' }}>
+                    <button onClick={loadMoreVideos} className="btn-primary" style={{ padding: '15px 40px', borderRadius: '30px' }}>
+                        Больше видео
+                    </button>
+                </div>
             )}
         </div>
     );
