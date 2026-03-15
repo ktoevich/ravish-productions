@@ -1764,12 +1764,6 @@ footer {
     border-radius: var(--radius);
 }
 
-/* ===== MOBILE BURGER (≤768px) ===== */
-@media (max-width: 768px) {
-    .burger {
-        display: flex;
-    }
-}
 
 /* ===== BURGER BASE ===== */
 .burger {
@@ -1807,6 +1801,14 @@ footer {
     transform: rotate(-45deg);
     width: 23px;
 }
+
+/* ===== MOBILE BURGER ACTIVATION ===== */
+@media (max-width: 768px) {
+    .burger {
+        display: flex;
+    }
+}
+
 
 .mobile-nav {
     position: fixed;
