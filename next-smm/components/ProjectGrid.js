@@ -111,12 +111,18 @@ export default function ProjectGrid({ initialImages = [], initialVideos = [] }) 
                                 }}>
                                     <video
                                         src={`/mat/${file}`}
-                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                        autoPlay
+                                        style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: 'pointer' }}
                                         loop
                                         muted
                                         playsInline
-                                        preload="auto"
+                                        preload="metadata"
+                                        onClick={(e) => {
+                                            if (e.target.paused) {
+                                                e.target.play();
+                                            } else {
+                                                e.target.pause();
+                                            }
+                                        }}
                                     />
 
 
